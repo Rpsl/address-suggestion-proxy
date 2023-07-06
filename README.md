@@ -13,6 +13,10 @@ Planned providers:
 - Dadata
 - 2Gis
 
+## Docker image
+
+- [rpsl/address-suggestion-proxy](https://hub.docker.com/repository/docker/rpsl/address-suggestion-proxy/general)
+
 ## How to deploy
 
 - Create and edit config file `cp config.example.toml config.toml`
@@ -24,7 +28,7 @@ You may feel free to join the development or make feature requests for this serv
 
 If you want to contribute but don't know where to start, here are some implementation ideas:
 
-- Add other suggestion providers, such as [Datata](https://dadata.ru/suggestions/#address) or [2GIS](https://docs.2gis.com/en/api/search/suggest/reference/3.0/suggests#/paths/~13.0~1suggests/get)
+- Add other suggestion providers, such as [DaData](https://dadata.ru/suggestions/#address) or [2GIS](https://docs.2gis.com/en/api/search/suggest/reference/3.0/suggests#/paths/~13.0~1suggests/get)
 - Include additional caching services besides Redis, such as [MongoDB](https://www.mongodb.com/) or [BadgerDB](https://dgraph.io/docs/badger/)
 - Devise an efficient method to select the best data from different providers
 - Enhance the external API requests to take user location into account
