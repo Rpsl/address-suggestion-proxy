@@ -19,6 +19,7 @@ func SearchByText(ctx iris.Context, service services.CacheService, cont provider
 
 		if err != nil {
 			log.Errorln(errors.Wrap(err, "can't decode object into suggestion"))
+
 			go func() {
 				_ = service.DeleteByKey(q)
 			}()

@@ -17,13 +17,14 @@ func NewProvidersContainer(cfg *config.Config) Container {
 	c.p = make(map[string]Provider)
 
 	if cfg.YandexEnabled {
-		yp, err := NewYandexProvider(cfg.YandexApiKey)
+		yp, err := NewYandexProvider(cfg.YandexAPIKey)
 
 		if err != nil {
 			log.Fatal(errors.Wrap(err, "error while creating yandex provider"))
 		}
 
 		c.p[YandexProviderName] = yp
+
 		log.Debug("yandex provider enabled")
 	}
 
@@ -41,21 +42,23 @@ func (c *Container) SearchInAvailableProviders(query string) datamodels.Suggesti
 	}
 
 	var wg sync.WaitGroup
+
 	ch := make(chan datamodels.Suggestion, 1)
 
 	for _, p := range c.p {
 		wg.Add(1)
 
-		go func() {
+		go func(pr Provider) {
 			defer wg.Done()
-			res, err := p.Search(query)
+
+			res, err := pr.Search(query)
 
 			if err != nil {
 				log.Error(errors.Wrap(err, "error search from provider"))
 			}
 
 			ch <- res
-		}()
+		}(p)
 	}
 
 	go func() {
@@ -67,15 +70,17 @@ func (c *Container) SearchInAvailableProviders(query string) datamodels.Suggesti
 
 	for {
 		v, ok := <-ch
+
 		if !ok {
 			break
 		}
+
 		results = append(results, v)
 	}
 
-	max := 0
 	var result datamodels.Suggestion
 
+	max := 0
 	// todo нужно сделать какой-нибудь нормальный фильтр, на основе качества результатов
 	for _, v := range results {
 		if len(v.Suggestion) > max {
