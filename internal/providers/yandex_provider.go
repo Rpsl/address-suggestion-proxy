@@ -38,9 +38,10 @@ func (yp *YandexProvider) Search(query string) (datamodels.Suggestion, error) {
 	defer resp.Body.Close()
 
 	var r YandexResponse
+
 	json.NewDecoder(resp.Body).Decode(&r)
 
-	sr, err := yp.convertToSearchResponse(&r)
+	sr, _ := yp.convertToSearchResponse(&r)
 
 	return sr, nil
 }

@@ -8,7 +8,7 @@ import (
 )
 
 type Config struct {
-	YandexApiKey  string `toml:"yandex_apikey"`
+	YandexAPIKey  string `toml:"yandex_apikey"`
 	YandexEnabled bool   `toml:"yandex_enabled"`
 	DadataEnabled bool   `toml:"dadata_enabled"`
 	RedisHost     string `toml:"redis_host"`
@@ -20,10 +20,11 @@ type Config struct {
 const PathConfig string = "config.toml"
 
 var once sync.Once
-var cfg *Config
 
 // LoadConfig loads TOML configuration from a file path
 func LoadConfig() (*Config, error) {
+	var cfg *Config
+
 	once.Do(func() {
 		config := Config{}
 
