@@ -1,7 +1,5 @@
 # Proxy for address suggestion requests
 
----
-
 ## What is it
 
 This service solves the problem of caching responses from address suggestion services. Services that provide address suggestions based on partial input have limitations on the number of requests, and when the limits are exceeded, they require switching to a paid subscription plan.
