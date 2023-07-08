@@ -4,6 +4,8 @@ go 1.20
 
 require (
 	github.com/BurntSushi/toml v1.2.1
+	github.com/go-redis/redismock/v9 v9.0.3
+	github.com/h2non/gock v1.2.0
 	github.com/kataras/iris/v12 v12.2.0
 	github.com/pkg/errors v0.8.1
 	github.com/redis/go-redis/v9 v9.0.5
@@ -25,6 +27,7 @@ require (
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/gorilla/css v1.0.0 // indirect
+	github.com/h2non/parth v0.0.0-20190131123155-b4df798d6542 // indirect
 	github.com/iris-contrib/schema v0.0.6 // indirect
 	github.com/josharian/intern v1.0.0 // indirect
 	github.com/kataras/blocks v0.0.7 // indirect

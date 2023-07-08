@@ -10,7 +10,7 @@ Available providers:
 - Yandex Suggestion
 
 Planned providers:
-- Dadata
+- DaData
 - 2Gis
 
 ## Docker image
@@ -47,7 +47,7 @@ docker compose up cache
 clear; go run ./
 ```
 
-Or can star all via docker compose. Don't forget edit redis host in config.toml, if you run application via docker compose host must be "cache" 
+Or can start all via docker compose. Don't forget edit redis host in config.toml, if you run application via docker compose host must be "cache" 
 ```shell
 make build-docker && docker compose up
 ```

@@ -3,6 +3,8 @@ package providers
 import (
 	"address-suggesstion-proxy/internal/datamodels"
 	"encoding/json"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
 	"time"
@@ -12,6 +14,7 @@ const YandexProviderName = "yandex"
 
 type YandexProvider struct {
 	apikey string
+	cl     *http.Client
 }
 
 func NewYandexProvider(apikey string) (*YandexProvider, error) {
@@ -23,27 +26,49 @@ func NewYandexProvider(apikey string) (*YandexProvider, error) {
 }
 
 func (yp *YandexProvider) Search(query string) (datamodels.Suggestion, error) {
+	client := yp.getHTTPClient()
+
+	resp, err := client.Get(yp.getQueryURI(query))
+
+	if err != nil {
+		log.Errorln(errors.Wrap(err, "error get http client"))
+	}
+
+	defer resp.Body.Close()
+
+	if err != nil {
+		return datamodels.Suggestion{}, err
+	}
+
+	var r YandexResponse
+
+	_ = json.NewDecoder(resp.Body).Decode(&r)
+	sr, _ := yp.convertToSearchResponse(&r)
+
+	return sr, nil
+}
+
+func (yp *YandexProvider) getHTTPClient() *http.Client {
+	if yp.cl == nil {
+		tr := &http.Transport{
+			MaxIdleConns:    10,
+			IdleConnTimeout: 10 * time.Second,
+		}
+
+		yp.cl = &http.Client{Transport: tr}
+	}
+
+	return yp.cl
+}
+
+func (yp *YandexProvider) getQueryURI(query string) string {
 	// https://geocode-maps.yandex.ru/1.x/?apikey=YOUR_API_KEY&geocode=Москва,+Тверская+улица,+дом+7&format=json
 	params := url.Values{}
 	params.Add("apikey", yp.apikey)
 	params.Add("geocode", query)
 	params.Add("format", "json")
 
-	resp, err := http.Get("https://geocode-maps.yandex.ru/1.x/?" + params.Encode())
-
-	if err != nil {
-		return datamodels.Suggestion{}, err
-	}
-
-	defer resp.Body.Close()
-
-	var r YandexResponse
-
-	json.NewDecoder(resp.Body).Decode(&r)
-
-	sr, _ := yp.convertToSearchResponse(&r)
-
-	return sr, nil
+	return "https://geocode-maps.yandex.ru/1.x/?" + params.Encode()
 }
 
 func (yp *YandexProvider) convertToSearchResponse(yr *YandexResponse) (datamodels.Suggestion, error) {
