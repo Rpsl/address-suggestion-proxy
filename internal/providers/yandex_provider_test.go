@@ -13,7 +13,7 @@ func TestYandexProvider_Search(t *testing.T) {
 
 	yp := &YandexProvider{apikey: "MY_KEY"}
 
-	gock.InterceptClient(yp.getHttpClient())
+	gock.InterceptClient(yp.getHTTPClient())
 	gock.DisableNetworking()
 	gock.New("https://geocode-maps.yandex.ru").
 		Get("/1.x/").

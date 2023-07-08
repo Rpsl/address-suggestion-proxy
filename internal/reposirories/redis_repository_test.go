@@ -11,6 +11,7 @@ func TestRedisRepository_normalizeKey(t *testing.T) {
 	type args struct {
 		query string
 	}
+
 	tests := []struct {
 		name string
 		args args
@@ -55,6 +56,7 @@ func TestRedisRepository_Get(t *testing.T) {
 	type args struct {
 		key string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -109,6 +111,7 @@ func TestRedisRepository_Set(t *testing.T) {
 		value string
 		ttl   time.Duration
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -124,6 +127,7 @@ func TestRedisRepository_Set(t *testing.T) {
 			wantErr: false,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			db, mock := redismock.NewClientMock()
@@ -144,6 +148,7 @@ func TestRedisRepository_Delete(t *testing.T) {
 	type args struct {
 		key string
 	}
+
 	tests := []struct {
 		name    string
 		args    args
@@ -157,6 +162,7 @@ func TestRedisRepository_Delete(t *testing.T) {
 			wantErr: false,
 		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			db, mock := redismock.NewClientMock()

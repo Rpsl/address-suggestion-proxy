@@ -3,6 +3,8 @@ package providers
 import (
 	"address-suggesstion-proxy/internal/datamodels"
 	"encoding/json"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"net/url"
 	"time"
@@ -24,9 +26,14 @@ func NewYandexProvider(apikey string) (*YandexProvider, error) {
 }
 
 func (yp *YandexProvider) Search(query string) (datamodels.Suggestion, error) {
-	client := yp.getHttpClient()
+	client := yp.getHTTPClient()
 
 	resp, err := client.Get(yp.getQueryURI(query))
+
+	if err != nil {
+		log.Errorln(errors.Wrap(err, "error get http client"))
+	}
+
 	defer resp.Body.Close()
 
 	if err != nil {
@@ -41,7 +48,7 @@ func (yp *YandexProvider) Search(query string) (datamodels.Suggestion, error) {
 	return sr, nil
 }
 
-func (yp *YandexProvider) getHttpClient() *http.Client {
+func (yp *YandexProvider) getHTTPClient() *http.Client {
 	if yp.cl == nil {
 		tr := &http.Transport{
 			MaxIdleConns:    10,
@@ -50,6 +57,7 @@ func (yp *YandexProvider) getHttpClient() *http.Client {
 
 		yp.cl = &http.Client{Transport: tr}
 	}
+
 	return yp.cl
 }
 
