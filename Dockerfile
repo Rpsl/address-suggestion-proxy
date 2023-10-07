@@ -1,7 +1,7 @@
 ##
 ## Build
 ##
-FROM golang:1.20-buster AS build
+FROM golang:1.21-bullseye AS build
 
 WORKDIR /app
 
@@ -15,7 +15,7 @@ RUN export CGO_ENABLED=0 && go build -ldflags "-s -w" -o /address-suggestion-pro
 ##
 ## Production
 ##
-FROM golang:1.20-alpine
+FROM golang:1.21-alpine
 
 WORKDIR /app/
 

@@ -11,7 +11,6 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/core/router"
-	"github.com/redis/go-redis/v9"
 	"github.com/sethvargo/go-envconfig"
 	log "github.com/sirupsen/logrus"
 	"time"
@@ -34,12 +33,7 @@ func main() {
 		log.WithError(err).Fatal("failed to load configuration")
 	}
 
-	db := redis.NewClient(&redis.Options{
-		Addr:     fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort),
-		Password: "", // no password set
-		DB:       0,  // use default DB
-	})
-
+	db := services.NewRedisClient(&cfg)
 	repo, _ := reposirories.NewRedisRepository(db)
 	cache := services.NewCacheService(repo)
 	prov := providers.NewProvidersContainer(&cfg)

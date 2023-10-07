@@ -7,7 +7,13 @@ build-docker:
 build-clean:
 	rm -rf ./build
 
-attach:
+run-docker-dev:
+	docker-compose -f docker-compose.dev.yml up
+
+run-docker-prod:
+	docker-compose -f docker-compose.dev.yml up -d
+
+run:
 	docker run --rm -it -v $(shell pwd):/app/ --name address-suggestion-proxy --entrypoint 'sh' address-suggestion-proxy:local
 
 test:

@@ -38,7 +38,7 @@ If you want to contribute but don't know where to start, here are some implement
 Create `.env` file and edit settings
 
 ```shell
-cp env.example .env
+cp .env.example .env
 ```
 
 You can start cache in docker and run application on your host:
