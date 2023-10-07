@@ -1,8 +1,0 @@
-yandex_enabled = true
-yandex_apikey = ""
-
-redis_host = "127.0.0.1"
-redis_port = "6379"
-
-app_port = "8080"
-app_mode = "dev" # "dev" or "prod"

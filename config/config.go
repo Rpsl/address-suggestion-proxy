@@ -1,41 +1,12 @@
 package config
 
-import (
-	"github.com/BurntSushi/toml"
-	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
-	"sync"
-)
-
 type Config struct {
-	YandexAPIKey  string `toml:"yandex_apikey"`
-	YandexEnabled bool   `toml:"yandex_enabled"`
-	DadataEnabled bool   `toml:"dadata_enabled"`
-	RedisHost     string `toml:"redis_host"`
-	RedisPort     string `toml:"redis_port"`
-	AppPort       string `toml:"app_port"`
-	AppMode       string `toml:"app_mode"`
-}
-
-const PathConfig string = "config.toml"
-
-var once sync.Once
-
-// LoadConfig loads TOML configuration from a file path
-func LoadConfig() (*Config, error) {
-	var cfg *Config
-
-	once.Do(func() {
-		config := Config{}
-
-		_, err := toml.DecodeFile(PathConfig, &config)
-
-		if err != nil {
-			log.Fatal(errors.Wrap(err, "failed to load config file"))
-		}
-
-		cfg = &config
-	})
-
-	return cfg, nil
+	YandexAPIKey  string `env:"YANDEX_APIKEY,default=''"`
+	YandexEnabled bool   `env:"YANDEX_ENABLED,default=false"`
+	DadataEnabled bool   `env:"DADATA_ENABLED,default=false"`
+	RedisSentinel bool   `env:"REDIS_SENTINEL,default=false"`
+	RedisHost     string `env:"REDIS_HOST,default=127.0.0.1"`
+	RedisPort     string `env:"REDIS_PORT,default=6379"`
+	AppPort       string `env:"APP_PORT,default=8080"`
+	AppMode       string `env:"APP_MODE,default=prod"`
 }
