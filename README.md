@@ -35,10 +35,10 @@ If you want to contribute but don't know where to start, here are some implement
 
 ## How to develop
 
-Create `config.toml` file and edit settings
+Create `.env` file and edit settings
 
 ```shell
-cp config.example.toml config.toml
+cp env.example .env
 ```
 
 You can start cache in docker and run application on your host:

@@ -6,10 +6,13 @@ import (
 	"address-suggesstion-proxy/internal/providers"
 	"address-suggesstion-proxy/internal/reposirories"
 	"address-suggesstion-proxy/internal/services"
+	"context"
 	"fmt"
+	"github.com/joho/godotenv"
 	"github.com/kataras/iris/v12"
 	"github.com/kataras/iris/v12/core/router"
 	"github.com/redis/go-redis/v9"
+	"github.com/sethvargo/go-envconfig"
 	log "github.com/sirupsen/logrus"
 	"time"
 )
@@ -21,10 +24,14 @@ func main() {
 	})
 	log.SetLevel(log.DebugLevel)
 
-	cfg, err := config.LoadConfig()
-
+	err := godotenv.Load()
 	if err != nil {
-		log.WithError(err).Fatal("failed to load configuration file")
+		log.Fatal("Error loading .env file")
+	}
+
+	var cfg config.Config
+	if err := envconfig.Process(context.Background(), &cfg); err != nil {
+		log.WithError(err).Fatal("failed to load configuration")
 	}
 
 	db := redis.NewClient(&redis.Options{
@@ -35,7 +42,7 @@ func main() {
 
 	repo, _ := reposirories.NewRedisRepository(db)
 	cache := services.NewCacheService(repo)
-	prov := providers.NewProvidersContainer(cfg)
+	prov := providers.NewProvidersContainer(&cfg)
 
 	app := iris.Default()
 
