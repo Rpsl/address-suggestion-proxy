@@ -12,7 +12,7 @@ func NewRedisClient(cfg *config.Config) *redis.Client {
 	addr := fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort)
 
 	if cfg.RedisSentinel {
-		log.Debugln(fmt.Sprintf("%s", "using redis-sentinel"))
+		log.Debugln("using redis-sentinel")
 
 		sentinel := redis.NewSentinelClient(&redis.Options{
 			Addr: fmt.Sprintf("%s:%s", cfg.RedisSentinelHost, cfg.RedisSentinelPort),
@@ -23,10 +23,12 @@ func NewRedisClient(cfg *config.Config) *redis.Client {
 		if err != nil {
 			log.WithError(err).Fatal("failed to get redis sentinel master host")
 		}
+
 		addr = fmt.Sprintf("%s:%s", masters[0], masters[1])
 
 		log.Debugf(fmt.Sprintf("redis master from sentinel is: %s", addr))
 	}
+
 	return redis.NewClient(&redis.Options{
 		Addr:     addr,
 		Password: cfg.RedisAuth,
