@@ -2,31 +2,34 @@ package services
 
 import (
 	"address-suggesstion-proxy/config"
-	"context"
 	"fmt"
+	"strings"
+
 	"github.com/redis/go-redis/v9"
 	log "github.com/sirupsen/logrus"
 )
+
+func getSentinelsList(cfg *config.Config) []string {
+	if cfg.RedisSentinelList != "" {
+		return strings.Split(cfg.RedisSentinelList, ",")
+	}
+
+	log.Warnln("Using deprecated sentinels config, use REDIS_SENTINEL_LIST instead")
+	return []string{fmt.Sprintf("%s:%s", cfg.RedisSentinelHost, cfg.RedisSentinelPort)}
+}
 
 func NewRedisClient(cfg *config.Config) *redis.Client {
 	addr := fmt.Sprintf("%s:%s", cfg.RedisHost, cfg.RedisPort)
 
 	if cfg.RedisSentinel {
-		log.Debugln("using redis-sentinel")
+		log.Debugln("Using redis-sentinel")
 
-		sentinel := redis.NewSentinelClient(&redis.Options{
-			Addr: fmt.Sprintf("%s:%s", cfg.RedisSentinelHost, cfg.RedisSentinelPort),
+		return redis.NewFailoverClient(&redis.FailoverOptions{
+			SentinelAddrs: getSentinelsList(cfg),
+			MasterName:    cfg.RedisSentinelName,
+			Password:      cfg.RedisAuth,
+			DB:            cfg.RedisDB,
 		})
-
-		masters, err := sentinel.GetMasterAddrByName(context.Background(), cfg.RedisSentinelName).Result()
-
-		if err != nil {
-			log.WithError(err).Fatal("failed to get redis sentinel master host")
-		}
-
-		addr = fmt.Sprintf("%s:%s", masters[0], masters[1])
-
-		log.Debugf(fmt.Sprintf("redis master from sentinel is: %s", addr))
 	}
 
 	return redis.NewClient(&redis.Options{
