@@ -1,44 +1,60 @@
-version: '3.8'
+version: "3.8"
 services:
   app:
     image: address-suggestion-proxy:local
     restart: unless-stopped
     ports:
-      - '8080:8080'
+      - "8080:8080"
     working_dir: /app
     entrypoint: ["go", "run", "."]
     volumes:
       - .:/app
     depends_on:
-      - redis
+      - redis-sentinel
     networks:
       - backend
   redis:
-    image: 'bitnami/redis:latest'
+    image: "bitnami/redis:latest"
     restart: always
     environment:
       - ALLOW_EMPTY_PASSWORD=no
       - REDIS_PASSWORD=password
+      - REDIS_MASTER_PASSWORD=password
+      - REDIS_REPLICATION_MODE=master
     ports:
-      - '6379:6379'
-    volumes:
-      - suggestion-redis:/bitnami/redis/data
+      - "6379:6379"
     networks:
       - backend
+  redis-slave:
+    image: "bitnami/redis:latest"
+    restart: always
+    environment:
+      - ALLOW_EMPTY_PASSWORD=no
+      - REDIS_PASSWORD=password
+      - REDIS_MASTER_HOST=redis
+      - REDIS_MASTER_PORT_NUMBER=6379
+      - REDIS_MASTER_PASSWORD=password
+      - REDIS_REPLICATION_MODE=slave
+    ports:
+      - "6380:6380"
+    networks:
+      - backend
+    depends_on:
+      - redis
   redis-sentinel:
-    image: 'bitnami/redis-sentinel:latest'
+    image: "bitnami/redis-sentinel:latest"
     environment:
       - REDIS_MASTER_HOST=redis
       - REDIS_MASTER_PASSWORD=password
+      - REDIS_SENTINEL_DOWN_AFTER_MILLISECONDS=1000
+      - REDIS_SENTINEL_QUORUM=1
     ports:
-      - '26379:26379'
+      - "26379:26379"
     depends_on:
       - redis
+      - redis-slave
     networks:
       - backend
-volumes:
-  suggestion-redis:
-    driver: local
 networks:
   backend:
     driver: bridge
